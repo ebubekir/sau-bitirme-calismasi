@@ -23,6 +23,7 @@ players_box.children = [
             page_action='native',
             page_current=0,
             page_size=25,
+            hidden_columns=['player_api_id']
         )
     ),
 
@@ -31,7 +32,8 @@ players_box.children = [
         interval=1 * 1000,
         n_intervals=0,
         max_intervals=1,
-    )
+    ),
+    html.Div(id="redirect-component")
 ]
 
 layout = [
