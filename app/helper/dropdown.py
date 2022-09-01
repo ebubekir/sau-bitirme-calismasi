@@ -40,7 +40,7 @@ def get_league_list(country_id: int = None) -> list:
     df = league_cache()
     if country_id:
         df = df[df['country_id'] == country_id]
-    return [{"label": l, "value": l} for l in df['name'].unique().tolist()]
+    return [{"label": html.Div([l], style={"color": "black"}), "value": l} for l in df['name'].unique().tolist()]
 
 
 def country_dropdown():
