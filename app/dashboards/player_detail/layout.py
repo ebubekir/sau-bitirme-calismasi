@@ -4,6 +4,7 @@ from dash import dcc, html
 import dash_bootstrap_components as dbc
 
 summary_box = Box(title="Summary")
+player_info_box = Box(title="Player Info")
 
 summary_box.children = [
     dbc.Row([
@@ -32,6 +33,20 @@ summary_box.children = [
     ], id="player-summary-box")
 ]
 
+player_info_box.children = [
+    dbc.Row([
+        dbc.Col([
+            dcc.Loading(
+                dcc.Graph(id="player-radar-chart")
+            )
+        ]),
+        dbc.Col([
+            'hop'
+        ], id="player-info")
+
+    ])
+]
+
 layout = [
     dbc.Input(id="player-id", type="hidden"),
     dcc.Interval(
@@ -40,5 +55,6 @@ layout = [
         n_intervals=0,
         max_intervals=1,
     ),
-    dbc.Row(summary_box.render())
+    dbc.Row(player_info_box.render()),
+    dbc.Row(summary_box.render(), style={"marginTop": "10px"})
 ]

@@ -83,3 +83,53 @@ def load_summary_box(player_id):
             ])
         )
     return results
+
+
+@app.callback(
+    Output("player-radar-chart", "figure"),
+    Input(f"player-id", "value")
+)
+def load_player_radar_chart(player_id):
+    player_df = players_cache()
+    player_attr_df = players_attributes_cache()
+    df = pd.merge(player_df, player_attr_df, on="player_api_id")
+    df = df.drop_duplicates(subset="player_name")
+    df = df[df['player_name'] == 'Lionel Messi']
+    df = df.T.reset_index()
+    df.columns = ['metric', 'value']
+    df = df[15:]
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatterpolar(
+        r=df['value'].values.tolist(),
+        theta=[l.replace("_", " ").title() for l in df['metric'].values.tolist()],
+        fill='toself',
+        name="PAC"
+    ))
+
+    fig.update_layout(height=600, template="plotly_dark", title="Player Radar Chart", plot_bgcolor="#303030",
+                      paper_bgcolor="#303030")
+    return fig
+
+
+@app.callback(
+    Output("player-info", "children"),
+    Input(f"player-id", "value")
+)
+def load_player_info(player_id):
+    player_df = players_cache()
+    player_attr_df = players_attributes_cache()
+    df = pd.merge(player_df, player_attr_df, on="player_api_id")
+    df = df[df['player_api_id'] == int(player_id)]
+    df = df.drop_duplicates(subset="player_name")
+    df = df.T.reset_index()
+    df = df[df['index'].isin(
+        ['player_name', 'birthday', 'weight', 'height', 'overall_rating', 'potential', 'preferred_foot'])]
+    children = [
+        dbc.Row([
+            dbc.Col(row['index'].replace("_", " ").title(), style={"fontWeight": "bold"}),
+            dbc.Col(row[df.columns[1]])
+        ])
+        for index, row in df.iterrows()]
+    return children
